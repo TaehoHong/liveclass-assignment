@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS sale_record (
     amount      INT             NOT NULL,
     paid_at     TIMESTAMP       NOT NULL,
 
+    created_at      TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+
     PRIMARY KEY (id),
     CONSTRAINT fk__sale_record__course_id FOREIGN KEY (course_id) REFERENCES course(id)
 );
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS cancel_record (
     cancel_at       TIMESTAMP       NOT NULL,
 
     created_at      TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+
     PRIMARY KEY (id),
     CONSTRAINT fk__cancel_record__sale_record_id FOREIGN KEY (sale_record_id) REFERENCES sale_record(id)
 );
@@ -56,8 +59,8 @@ CREATE TABLE IF NOT EXISTS settlement (
     sale_count                  INT         NOT NULL,
     cancel_count                INT         NOT NULL,
 
-    commition_rate              SMALLINT    NOT NULL    COMMENT '반영된 플랫폼 수수료율',
-    commition_amount            INT         NOT NULL    COMMENT '반영된 플랫폼 수수료 금액',
+    commission_rate             SMALLINT    NOT NULL    COMMENT '반영된 플랫폼 수수료율',
+    commission_amount           INT         NOT NULL    COMMENT '반영된 플랫폼 수수료 금액',
 
     carryover_deduction_amount  INT         NOT NULL    COMMENT '이전 정산월에서 이월되어 이번 정산 금액에서 차감되는 금액',
 
