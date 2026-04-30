@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS sale_record (
     course_id   BIGINT          NOT NULL,
     student_id  BIGINT          NOT NULL,
 
-    amount      INT             NOT NULL,
+    amount      BIGINT          NOT NULL,
     paid_at     TIMESTAMP       NOT NULL,
 
     created_at      TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS cancel_record (
 
     sale_record_id  BIGINT          NOT NULL,
 
-    amount          INT             NOT NULL,
+    amount          BIGINT          NOT NULL,
     cancel_at       TIMESTAMP       NOT NULL,
 
     created_at      TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
@@ -51,18 +51,18 @@ CREATE TABLE IF NOT EXISTS settlement (
     creator_id                  BIGINT      NOT NULL,
     status                      ENUM('PENDING', 'CONFIRMED', 'PAID') NOT NULL DEFAULT 'PENDING',
 
-    total_sale_amount           INT         NOT NULL    COMMENT '총 판매 금액',
-    total_cancel_amount         INT         NOT NULL    COMMENT '총 취소/환불 금액',
-    net_sales_amount            INT         NOT NULL    COMMENT '순 판매 금액(총 판매 금액 - 총 취소/환불 금액)',
-    settlement_amount           INT         NOT NULL    COMMENT '정산 예정 금액',
+    total_sale_amount           BIGINT      NOT NULL    COMMENT '총 판매 금액',
+    total_cancel_amount         BIGINT      NOT NULL    COMMENT '총 취소/환불 금액',
+    net_sales_amount            BIGINT      NOT NULL    COMMENT '순 판매 금액(총 판매 금액 - 총 취소/환불 금액)',
+    settlement_amount           BIGINT      NOT NULL    COMMENT '정산 예정 금액',
 
-    sale_count                  INT         NOT NULL,
-    cancel_count                INT         NOT NULL,
+    sale_count                  BIGINT      NOT NULL,
+    cancel_count                BIGINT      NOT NULL,
 
     commission_rate             SMALLINT    NOT NULL    COMMENT '반영된 플랫폼 수수료율',
-    commission_amount           INT         NOT NULL    COMMENT '반영된 플랫폼 수수료 금액',
+    commission_amount           BIGINT      NOT NULL    COMMENT '반영된 플랫폼 수수료 금액',
 
-    carryover_deduction_amount  INT         NOT NULL    COMMENT '이전 정산월에서 이월되어 이번 정산 금액에서 차감되는 금액',
+    carryover_deduction_amount  BIGINT      NOT NULL    COMMENT '이전 정산월에서 이월되어 이번 정산 금액에서 차감되는 금액',
 
     settlement_month            DATE        NOT NULL    COMMENT '정산 기준월. 항상 해당 월 1일로 저장',
     settled_at                  TIMESTAMP   NOT NULL,

@@ -1,3 +1,18 @@
 spring:
   application:
     name: liveclass
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: liveclass
+    password: liveclass
+    url: jdbc:mysql://localhost:3306/liveclass?rewriteBatchedStatements=true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/db_schema.sql
+
+  jpa:
+    hibernate:
+      ddl-auto: none
