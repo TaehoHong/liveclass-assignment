@@ -2,6 +2,7 @@ package com.futureschole.liveclass.common.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -22,6 +23,16 @@ class CustomControllerAdvice {
         return ResponseEntity(
             ExceptionResponse(ErrorCode.BAD_REQUEST_FIELD_VALID_ERROR, errors),
             HttpStatus.BAD_REQUEST
+        )
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<ExceptionResponse> {
+        ex.printStackTrace()
+
+        return ResponseEntity(
+            ExceptionResponse(ErrorCode.BAD_REQUEST_BODY),
+            ErrorCode.BAD_REQUEST_BODY.httpStatus
         )
     }
 

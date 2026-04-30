@@ -1,5 +1,7 @@
 package com.futureschole.liveclass.domain.sale_record.service
 
+import com.futureschole.liveclass.common.exception.ApiException
+import com.futureschole.liveclass.common.exception.ErrorCode
 import com.futureschole.liveclass.domain.course.service.CourseService
 import com.futureschole.liveclass.domain.sale_record.dto.CreationSaleRecordDto
 import com.futureschole.liveclass.domain.sale_record.entity.SaleRecord
@@ -23,5 +25,11 @@ class SaleRecordService(
         ).let {
             saleRecordRepository.save(it)
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun getById(id: Long): SaleRecord {
+        return this.saleRecordRepository.findById(id)
+            .orElseThrow { ApiException(ErrorCode.NOT_FOUND_SALE_RECORD) }
     }
 }

@@ -1,28 +1,23 @@
-package com.futureschole.liveclass.domain.sale_record.entity
+package com.futureschole.liveclass.domain.cancel_record.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Table(name = "cancel_record")
 @Entity
 class CancelRecord(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0,
 
     @Column(name = "sale_record_id")
     val saleRecordId: Long,
 
     @Column(name = "amount")
-    val amount: Int,
+    val amount: Long,
 
     @Column(name = "cancel_at")
     val cancelAt: LocalDateTime,
 
     @Column(name = "created_at")
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime = LocalDateTime.now()
 )
