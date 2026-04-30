@@ -30,7 +30,7 @@ import java.time.LocalDateTime
     ]
 )
 @AutoConfigureMockMvc(addFilters = false)
-class SaleRecordControllerValidationTest: BehaviorSpec() {
+class SaleRecordControllerTest: BehaviorSpec() {
 
     override val extensions: List<Extension> = listOf(SpringExtension())
 
