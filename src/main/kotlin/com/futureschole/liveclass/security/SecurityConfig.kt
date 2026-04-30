@@ -3,6 +3,7 @@ package com.futureschole.liveclass.security
 import com.futureschole.liveclass.security.filter.AuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -25,6 +26,8 @@ class SecurityConfig(
             .logout { it.disable() }
             .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .authorizeHttpRequests { requests ->
+                requests.requestMatchers(HttpMethod.POST, "/api/sale-record").authenticated()
+
                 requests.anyRequest().denyAll()
             }
             .build()
