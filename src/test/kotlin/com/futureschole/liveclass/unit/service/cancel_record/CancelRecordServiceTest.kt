@@ -2,10 +2,12 @@ package com.futureschole.liveclass.unit.service.cancel_record
 
 import com.futureschole.liveclass.common.exception.ApiException
 import com.futureschole.liveclass.common.exception.ErrorCode
+import com.futureschole.liveclass.common.entity.Creator
 import com.futureschole.liveclass.domain.cancel_record.dto.CreationCancelRecordDto
 import com.futureschole.liveclass.domain.cancel_record.entity.CancelRecord
 import com.futureschole.liveclass.domain.cancel_record.repository.CancelRecordRepository
 import com.futureschole.liveclass.domain.cancel_record.service.CancelRecordService
+import com.futureschole.liveclass.domain.course.entity.Course
 import com.futureschole.liveclass.domain.sale_record.entity.SaleRecord
 import com.futureschole.liveclass.domain.sale_record.service.SaleRecordService
 import io.kotest.assertions.throwables.shouldThrow
@@ -27,7 +29,11 @@ class CancelRecordServiceTest: BehaviorSpec({
     Given("존재하는 판매 내역이 있을 때") {
         val saleRecord = SaleRecord(
             id = 1L,
-            courseId = 1L,
+            course = Course(
+                id = 1L,
+                creator = Creator(id = 1L, name = "김강사"),
+                title = "Spring Boot 입문"
+            ),
             studentId = 900001L,
             amount = 50000L,
             paidAt = LocalDateTime.now().minusDays(2)
@@ -138,7 +144,11 @@ class CancelRecordServiceTest: BehaviorSpec({
     Given("기존 취소 내역이 있는 판매 내역이 있을 때") {
         val saleRecord = SaleRecord(
             id = 1L,
-            courseId = 1L,
+            course = Course(
+                id = 1L,
+                creator = Creator(id = 1L, name = "김강사"),
+                title = "Spring Boot 입문"
+            ),
             studentId = 900001L,
             amount = 50000L,
             paidAt = LocalDateTime.now().minusDays(2)

@@ -2,6 +2,7 @@ package com.futureschole.liveclass.integration.cancel_record
 
 import com.futureschole.liveclass.domain.cancel_record.dto.CancelRecordDto
 import com.futureschole.liveclass.domain.cancel_record.dto.CreationCancelRecordDto
+import com.futureschole.liveclass.domain.course.repository.CourseRepository
 import com.futureschole.liveclass.domain.sale_record.entity.SaleRecord
 import com.futureschole.liveclass.domain.sale_record.repository.SaleRecordRepository
 import com.futureschole.liveclass.integration.BaseIntegrationTest
@@ -17,6 +18,9 @@ class CancelRecordIntegrationTest: BaseIntegrationTest() {
 
     @Autowired
     private lateinit var saleRecordRepository: SaleRecordRepository
+
+    @Autowired
+    private lateinit var courseRepository: CourseRepository
 
     init {
         Given("존재하는 판매 내역과 인증된 사용자가 있을 때") {
@@ -71,7 +75,7 @@ class CancelRecordIntegrationTest: BaseIntegrationTest() {
     private fun saveSaleRecord(): SaleRecord {
         return saleRecordRepository.saveAndFlush(
             SaleRecord(
-                courseId = 1L,
+                course = courseRepository.getReferenceById(1L),
                 studentId = 1L,
                 amount = 50000L,
                 paidAt = LocalDateTime.now().minusDays(2).withNano(0)

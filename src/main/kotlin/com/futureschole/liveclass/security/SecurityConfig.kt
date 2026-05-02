@@ -26,6 +26,7 @@ class SecurityConfig(
             .logout { it.disable() }
             .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .authorizeHttpRequests { requests ->
+                requests.requestMatchers(HttpMethod.GET, "/api/sale-record").hasAnyRole("ADMIN", "CREATOR")
                 requests.requestMatchers(HttpMethod.POST, "/api/sale-record").authenticated()
                 requests.requestMatchers(HttpMethod.POST, "/api/cancel-record").authenticated()
 

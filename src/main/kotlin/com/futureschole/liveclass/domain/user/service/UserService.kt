@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service
 class UserService {
 
     val users = listOf(
-        User(1, UserRole.ADMIN), User(2, UserRole.USER)
+        User(1, UserRole.ADMIN),
+        User(2, UserRole.CREATOR, creatorId = 1L)
     )
 
-    
     fun getUserById(id: Long): User {
         return this.users
             .firstOrNull { it.id == id }

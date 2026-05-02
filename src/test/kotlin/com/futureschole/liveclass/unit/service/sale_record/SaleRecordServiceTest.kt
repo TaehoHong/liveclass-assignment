@@ -2,6 +2,7 @@ package com.futureschole.liveclass.unit.service.sale_record
 
 import com.futureschole.liveclass.common.exception.ApiException
 import com.futureschole.liveclass.common.exception.ErrorCode
+import com.futureschole.liveclass.common.entity.Creator
 import com.futureschole.liveclass.domain.course.entity.Course
 import com.futureschole.liveclass.domain.course.service.CourseService
 import com.futureschole.liveclass.domain.sale_record.dto.CreationSaleRecordDto
@@ -34,7 +35,7 @@ class SaleRecordServiceTest: BehaviorSpec({
 
         every { courseService.getById(input.courseId) } returns Course(
             id = input.courseId,
-            creatorId = 1L,
+            creator = Creator(id = 1L, name = "김강사"),
             title = "Spring Boot 입문"
         )
         every { saleRecordRepository.save(any<SaleRecord>()) } answers { firstArg() }
@@ -43,7 +44,7 @@ class SaleRecordServiceTest: BehaviorSpec({
             val savedSaleRecord = saleRecordService.save(input)
 
             Then("강의를 조회한 뒤 입력값이 반영된 판매 내역을 저장한다") {
-                savedSaleRecord.courseId shouldBe input.courseId
+                savedSaleRecord.course.id shouldBe input.courseId
                 savedSaleRecord.studentId shouldBe input.studentId
                 savedSaleRecord.amount shouldBe input.amount
                 savedSaleRecord.paidAt shouldBe input.paidAt

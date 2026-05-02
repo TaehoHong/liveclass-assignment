@@ -33,6 +33,6 @@ class AuthenticationFilter(
     }
 
     private fun getAuthentication(user: User): UsernamePasswordAuthenticationToken {
-        return UsernamePasswordAuthenticationToken(user.id, "", listOf(SimpleGrantedAuthority("ROLE_${user.role}")))
+        return UsernamePasswordAuthenticationToken(user, "", listOf(SimpleGrantedAuthority("ROLE_${user.role}")))
     }
 }

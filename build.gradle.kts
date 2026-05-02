@@ -35,6 +35,10 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin")
     runtimeOnly("com.mysql:mysql-connector-j")
 
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:7.1")
+    ksp("io.github.openfeign.querydsl:querydsl-ksp-codegen:7.1")
+    annotationProcessor("io.github.openfeign.querydsl:querydsl-apt:7.1:jakarta")
+
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

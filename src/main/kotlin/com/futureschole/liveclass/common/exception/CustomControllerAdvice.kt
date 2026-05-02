@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @RestControllerAdvice
 class CustomControllerAdvice {
@@ -33,6 +34,16 @@ class CustomControllerAdvice {
         return ResponseEntity(
             ExceptionResponse(ErrorCode.BAD_REQUEST_BODY),
             ErrorCode.BAD_REQUEST_BODY.httpStatus
+        )
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatchException(ex: MethodArgumentTypeMismatchException): ResponseEntity<ExceptionResponse> {
+        ex.printStackTrace()
+
+        return ResponseEntity(
+            ExceptionResponse(ErrorCode.BAD_REQUEST_QUERY_PARAM),
+            ErrorCode.BAD_REQUEST_QUERY_PARAM.httpStatus
         )
     }
 
