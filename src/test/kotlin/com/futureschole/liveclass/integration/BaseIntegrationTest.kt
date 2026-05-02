@@ -12,13 +12,12 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import tools.jackson.databind.ObjectMapper
-import javax.sql.DataSource
 
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
 @AutoConfigureMockMvc
-open class BaseIntegrationTest: BehaviorSpec() {
+abstract class BaseIntegrationTest: BehaviorSpec() {
 
     override val extensions: List<Extension> = listOf(SpringExtension())
 
@@ -29,12 +28,10 @@ open class BaseIntegrationTest: BehaviorSpec() {
     protected lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    private lateinit var dataSource: DataSource
-
-    @Autowired
     protected lateinit var databaseTruncator: DatabaseTruncator
 
     init {
+        beforeEach { databaseTruncator.truncate() }
         afterEach { databaseTruncator.truncate() }
     }
 }
