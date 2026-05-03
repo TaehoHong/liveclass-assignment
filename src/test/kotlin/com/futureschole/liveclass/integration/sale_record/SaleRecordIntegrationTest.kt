@@ -1,12 +1,10 @@
 package com.futureschole.liveclass.integration.sale_record
 
-import com.futureschole.liveclass.domain.course.repository.CourseRepository
 import com.futureschole.liveclass.domain.sale_record.dto.CreationSaleRecordDto
 import com.futureschole.liveclass.domain.sale_record.dto.SaleRecordDto
 import com.futureschole.liveclass.domain.sale_record.dto.SaleRecordSearchDto
-import com.futureschole.liveclass.domain.sale_record.entity.SaleRecord
-import com.futureschole.liveclass.domain.sale_record.repository.SaleRecordRepository
 import com.futureschole.liveclass.integration.BaseIntegrationTest
+import com.futureschole.liveclass.testdata.TestDataInserter
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,10 +18,7 @@ import java.time.LocalDateTime
 class SaleRecordIntegrationTest: BaseIntegrationTest() {
 
     @Autowired
-    private lateinit var saleRecordRepository: SaleRecordRepository
-
-    @Autowired
-    private lateinit var courseRepository: CourseRepository
+    private lateinit var testDataInserter: TestDataInserter
 
     init {
         Given("존재하는 강의와 인증된 사용자가 있을 때") {
@@ -86,7 +81,7 @@ class SaleRecordIntegrationTest: BaseIntegrationTest() {
         Given("ADMIN 사용자가 있을 때") {
             When("판매 내역 목록 조회 API를 호출하면") {
                 Then("배열 응답을 반환한다") {
-                    saveSaleRecord()
+                    testDataInserter.prepareSaleRecordForIntegration()
 
                     val response = mockMvc.perform(
                         get("/api/sale-record")
@@ -105,7 +100,7 @@ class SaleRecordIntegrationTest: BaseIntegrationTest() {
         Given("CREATOR 사용자가 있을 때") {
             When("판매 내역 목록 조회 API를 호출하면") {
                 Then("접근을 허용한다") {
-                    saveSaleRecord()
+                    testDataInserter.prepareSaleRecordForIntegration()
 
                     val response = mockMvc.perform(
                         get("/api/sale-record")
@@ -120,22 +115,6 @@ class SaleRecordIntegrationTest: BaseIntegrationTest() {
                 }
             }
         }
-    }
-
-    private fun saveSaleRecord(
-        courseId: Long = 1L,
-        paidAt: LocalDateTime = LocalDateTime.of(2025, 3, 1, 10, 0)
-    ): SaleRecord {
-        val course = courseRepository.getReferenceById(courseId)
-
-        return saleRecordRepository.save(
-            SaleRecord(
-                course = course,
-                studentId = 900001L,
-                amount = 30000L,
-                paidAt = paidAt
-            )
-        )
     }
 
     private fun readSearchResponse(content: String): List<SaleRecordSearchDto> =

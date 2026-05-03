@@ -2,10 +2,8 @@ package com.futureschole.liveclass.integration.cancel_record
 
 import com.futureschole.liveclass.domain.cancel_record.dto.CancelRecordDto
 import com.futureschole.liveclass.domain.cancel_record.dto.CreationCancelRecordDto
-import com.futureschole.liveclass.domain.course.repository.CourseRepository
-import com.futureschole.liveclass.domain.sale_record.entity.SaleRecord
-import com.futureschole.liveclass.domain.sale_record.repository.SaleRecordRepository
 import com.futureschole.liveclass.integration.BaseIntegrationTest
+import com.futureschole.liveclass.testdata.TestDataInserter
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,20 +15,17 @@ import java.time.LocalDateTime
 class CancelRecordIntegrationTest: BaseIntegrationTest() {
 
     @Autowired
-    private lateinit var saleRecordRepository: SaleRecordRepository
-
-    @Autowired
-    private lateinit var courseRepository: CourseRepository
+    private lateinit var testDataInserter: TestDataInserter
 
     init {
         Given("존재하는 판매 내역과 인증된 사용자가 있을 때") {
             When("취소 내역 등록 API를 호출하면") {
                 Then("취소 내역을 DB에 저장한다") {
-                    val saleRecord = saveSaleRecord()
+                    testDataInserter.prepareCancelableSaleRecord()
                     val request = CreationCancelRecordDto(
-                        saleRecordId = saleRecord.id,
+                        saleRecordId = 801L,
                         amount = 20000L,
-                        cancelAt = saleRecord.paidAt.plusDays(1)
+                        cancelAt = LocalDateTime.of(2025, 3, 2, 10, 0)
                     )
 
                     val response = mockMvc.perform(
@@ -41,10 +36,10 @@ class CancelRecordIntegrationTest: BaseIntegrationTest() {
                     ).andExpect(status().isOk)
                         .andReturn().let {
                             objectMapper.readValue(it.response.contentAsString, CancelRecordDto::class.java)
-                        }
+                    }
 
                     response.id shouldBeGreaterThan 0
-                    response.saleRecordId shouldBe saleRecord.id
+                    response.saleRecordId shouldBe 801L
                     response.amount shouldBe request.amount
                     response.cancelAt shouldBe request.cancelAt
                 }
@@ -54,11 +49,11 @@ class CancelRecordIntegrationTest: BaseIntegrationTest() {
         Given("[CR-INT-002] 인증되지 않은 사용자가 있을 때") {
             When("취소 내역 등록 API를 호출하면") {
                 Then("요청을 거부하고 취소 내역을 저장하지 않는다") {
-                    val saleRecord = saveSaleRecord()
+                    testDataInserter.prepareCancelableSaleRecord()
                     val request = CreationCancelRecordDto(
-                        saleRecordId = saleRecord.id,
+                        saleRecordId = 801L,
                         amount = 20000L,
-                        cancelAt = saleRecord.paidAt.plusDays(1)
+                        cancelAt = LocalDateTime.of(2025, 3, 2, 10, 0)
                     )
 
                     mockMvc.perform(
@@ -70,16 +65,5 @@ class CancelRecordIntegrationTest: BaseIntegrationTest() {
                 }
             }
         }
-    }
-
-    private fun saveSaleRecord(): SaleRecord {
-        return saleRecordRepository.saveAndFlush(
-            SaleRecord(
-                course = courseRepository.getReferenceById(1L),
-                studentId = 1L,
-                amount = 50000L,
-                paidAt = LocalDateTime.now().minusDays(2).withNano(0)
-            )
-        )
     }
 }
