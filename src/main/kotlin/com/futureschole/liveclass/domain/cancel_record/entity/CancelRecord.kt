@@ -1,5 +1,6 @@
 package com.futureschole.liveclass.domain.cancel_record.entity
 
+import com.futureschole.liveclass.domain.sale_record.entity.SaleRecord
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -19,5 +20,9 @@ class CancelRecord(
     val cancelAt: LocalDateTime,
 
     @Column(name = "created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sale_record_id", insertable = false, updatable = false)
+    val saleRecord: SaleRecord? = null
 )

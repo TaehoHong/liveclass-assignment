@@ -12,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 interface SaleRecordRepository: JpaRepository<SaleRecord, Long>, QSaleRecordRepository {
 }
@@ -22,6 +23,11 @@ interface QSaleRecordRepository {
         startPaidAt: LocalDateTime?,
         endPaidAt: LocalDateTime?
     ): List<SaleRecordSearchDto>
+
+    fun findCreatorIdToSaleRecords(
+        creatorId: Long?,
+        month: YearMonth
+    ): Map<Long, List<SaleRecord>>
 }
 
 @Repository
@@ -59,6 +65,27 @@ class QSaleRecordRepositoryImpl(
             )
             .orderBy(saleRecord.paidAt.desc(), saleRecord.id.desc())
             .fetch()
+    }
+
+    override fun findCreatorIdToSaleRecords(
+        creatorId: Long?,
+        month: YearMonth
+    ): Map<Long, List<SaleRecord>> {
+        val start = month.atDay(1).atStartOfDay()
+        val endExclusive = month.plusMonths(1).atDay(1).atStartOfDay()
+
+        return queryFactory
+            .selectFrom(saleRecord)
+            .innerJoin(saleRecord.course, course).fetchJoin()
+            .innerJoin(course.creator, creator).fetchJoin()
+            .where(
+                creatorIdEq(creatorId),
+                saleRecord.paidAt.goe(start),
+                saleRecord.paidAt.lt(endExclusive),
+            )
+            .orderBy(creator.id.asc(), saleRecord.id.asc())
+            .fetch()
+            .groupBy { it.course.creator.id }
     }
 
     private fun creatorIdEq(creatorId: Long?) =

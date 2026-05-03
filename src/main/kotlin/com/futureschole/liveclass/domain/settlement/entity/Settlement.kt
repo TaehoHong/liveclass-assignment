@@ -1,13 +1,6 @@
 package com.futureschole.liveclass.domain.settlement.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -25,31 +18,31 @@ class Settlement(
     val status: SettlementStatus,
 
     @Column(name = "total_sale_amount")
-    val totalSaleAmount: Int,
+    val totalSaleAmount: Long,
 
     @Column(name = "total_cancel_amount")
-    val totalCancelAmount: Int,
+    val totalCancelAmount: Long,
 
     @Column(name = "net_sales_amount")
-    val netSalesAmount: Int,
+    val netSalesAmount: Long,
 
     @Column(name = "settlement_amount")
-    val settlementAmount: Int,
+    val settlementAmount: Long,
 
     @Column(name = "sale_count")
-    val saleCount: Int,
+    val saleCount: Long,
 
     @Column(name = "cancel_count")
-    val cancelCount: Int,
+    val cancelCount: Long,
 
     @Column(name = "commission_rate")
     val commissionRate: Short,
 
     @Column(name = "commission_amount")
-    val commissionAmount: Int,
+    val commissionAmount: Long,
 
     @Column(name = "carryover_deduction_amount")
-    val carryoverDeductionAmount: Int,
+    val carryoverDeductionAmount: Long,
 
     @Column(name = "settlement_month")
     val settlementMonth: LocalDate,
