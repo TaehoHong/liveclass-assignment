@@ -1,11 +1,14 @@
 package com.futureschole.liveclass.integration.settlement
 
 import com.futureschole.liveclass.domain.settlement.dto.SettlementMonthlyResponseDto
+import com.futureschole.liveclass.domain.settlement.entity.SettlementStatus
 import com.futureschole.liveclass.integration.BaseIntegrationTest
 import com.futureschole.liveclass.testdata.TestDataInserter
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.module.kotlin.readValue
 import java.time.YearMonth
@@ -83,6 +86,45 @@ class SettlementIntegrationTest: BaseIntegrationTest() {
                     settlement.settlementAmount shouldBe 104000L
                     settlement.saleCount shouldBe 2L
                     settlement.cancelCount shouldBe 1L
+                }
+            }
+        }
+
+        Given("ADMIN 사용자와 월 판매 데이터가 있을 때") {
+            When("정산 생성 API를 호출하면") {
+                Then("PENDING 정산을 생성하고 응답한다") {
+                    val month = YearMonth.of(2025, 3)
+
+                    testDataInserter.prepareSaleRecords()
+
+                    val response = mockMvc.perform(
+                        post("/api/settlement")
+                            .header("userId", "1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""{"creatorId":1,"month":"$month"}""")
+                    )
+                        .andExpect(status().isOk)
+                        .andReturn()
+                        .let { objectMapper.readValue(it.response.contentAsString, SettlementMonthlyResponseDto::class.java) }
+
+                    response.creatorId shouldBe 1L
+                    response.settlementMonth shouldBe month.atDay(1)
+                    response.status shouldBe SettlementStatus.PENDING
+                    (response.settlementId != null) shouldBe true
+                }
+            }
+        }
+
+        Given("CREATOR 사용자가 있을 때") {
+            When("정산 생성 API를 호출하면") {
+                Then("접근을 거부한다") {
+                    mockMvc.perform(
+                        post("/api/settlement")
+                            .header("userId", "2")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""{"creatorId":1,"month":"2025-03"}""")
+                    )
+                        .andExpect(status().isForbidden)
                 }
             }
         }

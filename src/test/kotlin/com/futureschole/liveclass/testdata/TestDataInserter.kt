@@ -40,7 +40,7 @@ class TestDataInserter(
         insertSettlement(
             id = 101L,
             creatorId = 1L,
-            settlementMonth = LocalDate.of(2025, 3, 1),
+            settlementMonth = LocalDate.of(2025, 2, 1),
             createdAt = LocalDateTime.of(2025, 4, 1, 10, 0)
         )
         insertSettlement(
@@ -57,20 +57,20 @@ class TestDataInserter(
         )
         insertSettlement(
             id = 104L,
-            creatorId = 1L,
+            creatorId = 2L,
             settlementMonth = LocalDate.of(2025, 4, 1),
             createdAt = LocalDateTime.of(2025, 5, 2, 9, 0)
         )
         insertSettlement(
             id = 105L,
-            creatorId = 1L,
+            creatorId = 3L,
             settlementMonth = LocalDate.of(2025, 4, 1),
             createdAt = LocalDateTime.of(2025, 5, 2, 9, 0)
         )
         insertSettlement(
             id = 106L,
             creatorId = 2L,
-            settlementMonth = LocalDate.of(2025, 4, 1),
+            settlementMonth = LocalDate.of(2025, 3, 1),
             createdAt = LocalDateTime.of(2025, 5, 3, 9, 0)
         )
     }

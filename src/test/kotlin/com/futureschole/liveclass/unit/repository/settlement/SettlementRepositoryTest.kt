@@ -1,10 +1,16 @@
 package com.futureschole.liveclass.unit.repository.settlement
 
+import com.futureschole.liveclass.domain.settlement.entity.Settlement
+import com.futureschole.liveclass.domain.settlement.entity.SettlementStatus
 import com.futureschole.liveclass.domain.settlement.repository.SettlementRepository
 import com.futureschole.liveclass.integration.BaseIntegrationTest
 import com.futureschole.liveclass.testdata.TestDataInserter
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.DataIntegrityViolationException
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 
 class SettlementRepositoryTest: BaseIntegrationTest() {
@@ -26,7 +32,7 @@ class SettlementRepositoryTest: BaseIntegrationTest() {
                         settlementMonth = null
                     )
 
-                    result.map { it.id } shouldBe listOf(105L, 104L, 103L, 106L, 102L, 101L)
+                    result.map { it.id } shouldBe listOf(103L, 104L, 105L, 102L, 106L, 101L)
                 }
             }
 
@@ -39,9 +45,52 @@ class SettlementRepositoryTest: BaseIntegrationTest() {
                         settlementMonth = YearMonth.of(2025, 3)
                     )
 
-                    result.map { it.id } shouldBe listOf(102L, 101L)
+                    result.map { it.id } shouldBe listOf(102L)
+                }
+            }
+        }
+
+        Given("같은 creator와 settlementMonth의 정산이 이미 저장되어 있을 때") {
+            When("동일한 creator와 settlementMonth의 정산을 다시 저장하면") {
+                Then("DB unique 제약 위반이 발생한다") {
+                    val settlementMonth = LocalDate.of(2025, 3, 1)
+
+                    settlementRepository.saveAndFlush(
+                        settlement(creatorId = 1L, settlementMonth = settlementMonth)
+                    )
+
+                    shouldThrow<DataIntegrityViolationException> {
+                        settlementRepository.saveAndFlush(
+                            settlement(creatorId = 1L, settlementMonth = settlementMonth)
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+private fun settlement(
+    creatorId: Long,
+    settlementMonth: LocalDate,
+): Settlement {
+    return Settlement(
+        id = 0L,
+        creatorId = creatorId,
+        status = SettlementStatus.PENDING,
+        totalSaleAmount = 100000L,
+        totalCancelAmount = 20000L,
+        netSalesAmount = 80000L,
+        settlementAmount = 64000L,
+        saleCount = 2L,
+        cancelCount = 1L,
+        commissionRate = 20.toShort(),
+        commissionAmount = 16000L,
+        carryoverDeductionAmount = 0L,
+        settlementMonth = settlementMonth,
+        settledAt = LocalDateTime.of(2025, 4, 1, 10, 0),
+        confirmedAt = null,
+        paidAt = null,
+        createdAt = LocalDateTime.of(2025, 4, 1, 10, 0)
+    )
 }
