@@ -48,6 +48,35 @@ class SettlementRepositoryTest: BaseIntegrationTest() {
                     result.map { it.id } shouldBe listOf(102L)
                 }
             }
+
+            When("정산월 범위로 creator별 정산 예정 금액을 조회하면") {
+                Then("시작월과 종료월을 포함해 projection 결과를 creator별 월 내림차순으로 반환한다") {
+                    testDataInserter.prepareSettlements()
+
+                    val result = settlementRepository.findCreatorIdToSettlement(
+                        startSettlementMonth = YearMonth.of(2025, 3),
+                        endSettlementMonth = YearMonth.of(2025, 4)
+                    )
+
+                    result.keys.toList() shouldBe listOf(1L, 2L, 3L)
+                    result.getValue(1L).map { it.settlementMonth } shouldBe listOf(
+                        LocalDate.of(2025, 4, 1),
+                        LocalDate.of(2025, 3, 1)
+                    )
+                    result.getValue(2L).map { it.settlementMonth } shouldBe listOf(
+                        LocalDate.of(2025, 4, 1),
+                        LocalDate.of(2025, 3, 1)
+                    )
+                    result.getValue(3L).map { it.settlementMonth } shouldBe listOf(LocalDate.of(2025, 4, 1))
+                    result.values.flatten().map { it.creatorId to it.settlementAmount } shouldBe listOf(
+                        1L to 64000L,
+                        1L to 64000L,
+                        2L to 64000L,
+                        2L to 64000L,
+                        3L to 64000L
+                    )
+                }
+            }
         }
 
         Given("같은 creator와 settlementMonth의 정산이 이미 저장되어 있을 때") {

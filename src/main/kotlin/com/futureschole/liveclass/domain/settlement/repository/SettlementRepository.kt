@@ -80,7 +80,7 @@ class QSettlementRepositoryImpl(
             )
             .orderBy(
                 settlement.creatorId.asc(),
-                settlement.settlementMonth.asc()
+                settlement.settlementMonth.desc()
             )
             .fetch()
             .groupBy { it.creatorId }

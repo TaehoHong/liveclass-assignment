@@ -41,21 +41,21 @@ class SettlementSummaryService(
                 }
         }
 
-        val summaryItems = creatorIdToSettlements.entries
+        return creatorIdToSettlements.entries
             .map { (creatorId, rawSettlements) ->
-                val settlements = rawSettlements.sortedBy { it.settlementMonth }
+                val settlements = rawSettlements.sortedByDescending { it.settlementMonth }
 
                 SettlementSummaryItemDto(
                     creatorId = creatorId,
                     settlements = settlements,
                     totalSettlementAmount = settlements.sumOf { it.settlementAmount }
                 )
+            }.let { summaryItem ->
+                SettlementSummaryResponseDto(
+                    settlements = summaryItem,
+                    totalSettlementAmount = summaryItem.sumOf { it.totalSettlementAmount }
+                )
             }
-
-        return SettlementSummaryResponseDto(
-            settlements = summaryItems,
-            totalSettlementAmount = summaryItems.sumOf { it.totalSettlementAmount }
-        )
     }
 
     private fun findPastSettlements(

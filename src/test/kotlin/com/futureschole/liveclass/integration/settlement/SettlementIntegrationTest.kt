@@ -1,6 +1,9 @@
 package com.futureschole.liveclass.integration.settlement
 
+import com.futureschole.liveclass.domain.settlement.dto.SettlementAmountDto
 import com.futureschole.liveclass.domain.settlement.dto.SettlementMonthlyResponseDto
+import com.futureschole.liveclass.domain.settlement.dto.SettlementSummaryItemDto
+import com.futureschole.liveclass.domain.settlement.dto.SettlementSummaryResponseDto
 import com.futureschole.liveclass.domain.settlement.entity.SettlementStatus
 import com.futureschole.liveclass.integration.BaseIntegrationTest
 import com.futureschole.liveclass.testdata.TestDataInserter
@@ -11,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.module.kotlin.readValue
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 
@@ -128,8 +132,74 @@ class SettlementIntegrationTest: BaseIntegrationTest() {
                 }
             }
         }
+
+        Given("과거월 정산 데이터가 있을 때") {
+            When("ADMIN이 summary를 조회하면") {
+                Then("creator별 월별 정산 예정 금액 목록과 합계를 반환한다") {
+                    testDataInserter.prepareSettlements()
+
+                    val response = mockMvc.perform(
+                        get("/api/settlement/summary")
+                            .header("userId", "1")
+                            .param("startMonth", "2025-03")
+                            .param("endMonth", "2025-04")
+                    )
+                        .andExpect(status().isOk)
+                        .andReturn()
+                        .let { readSummaryResponse(it.response.contentAsString) }
+
+                    response shouldBe getExpectedResponse()
+                }
+            }
+        }
+
+        Given("CREATOR 사용자가 summary를 조회할 때") {
+            When("summary API를 호출하면") {
+                Then("접근을 거부한다") {
+                    mockMvc.perform(
+                        get("/api/settlement/summary")
+                            .header("userId", "2")
+                            .param("startMonth", "2025-03")
+                            .param("endMonth", "2025-04")
+                    )
+                        .andExpect(status().isForbidden)
+                }
+            }
+        }
     }
+
+    private fun getExpectedResponse(): SettlementSummaryResponseDto = SettlementSummaryResponseDto(
+        settlements = listOf(
+            SettlementSummaryItemDto(
+                creatorId = 1L,
+                settlements = listOf(
+                    SettlementAmountDto(1L, LocalDate.of(2025, 4, 1), 64000L),
+                    SettlementAmountDto(1L, LocalDate.of(2025, 3, 1), 64000L)
+                ),
+                totalSettlementAmount = 128000L
+            ),
+            SettlementSummaryItemDto(
+                creatorId = 2L,
+                settlements = listOf(
+                    SettlementAmountDto(2L, LocalDate.of(2025, 4, 1), 64000L),
+                    SettlementAmountDto(2L, LocalDate.of(2025, 3, 1), 64000L)
+                ),
+                totalSettlementAmount = 128000L
+            ),
+            SettlementSummaryItemDto(
+                creatorId = 3L,
+                settlements = listOf(
+                    SettlementAmountDto(3L, LocalDate.of(2025, 4, 1), 64000L)
+                ),
+                totalSettlementAmount = 64000L
+            )
+        ),
+        totalSettlementAmount = 320000L
+    )
 
     private fun readSettlementResponse(content: String): List<SettlementMonthlyResponseDto> =
         objectMapper.readValue<Array<SettlementMonthlyResponseDto>>(content).toList()
+
+    private fun readSummaryResponse(content: String): SettlementSummaryResponseDto =
+        objectMapper.readValue(content)
 }
