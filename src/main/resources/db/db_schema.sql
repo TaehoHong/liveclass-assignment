@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS settlement (
     total_sale_amount           BIGINT      NOT NULL    COMMENT '총 판매 금액',
     total_cancel_amount         BIGINT      NOT NULL    COMMENT '총 취소/환불 금액',
     net_sales_amount            BIGINT      NOT NULL    COMMENT '순 판매 금액(총 판매 금액 - 총 취소/환불 금액)',
-    settlement_amount           BIGINT      NOT NULL    COMMENT '정산 예정 금액',
+    settlement_amount           BIGINT      NOT NULL    COMMENT '정산 예정 금액(순판매 금액 - 수수료 - 차감금액)',
 
     sale_count                  BIGINT      NOT NULL,
     cancel_count                BIGINT      NOT NULL,
@@ -71,5 +71,6 @@ CREATE TABLE IF NOT EXISTS settlement (
     created_at                  TIMESTAMP   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (id),
-    CONSTRAINT fk__settlement__creator_id FOREIGN KEY (creator_id) REFERENCES creator(id)
+    CONSTRAINT fk__settlement__creator_id FOREIGN KEY (creator_id) REFERENCES creator(id),
+    CONSTRAINT uk__settlement__creator_month UNIQUE (creator_id, settlement_month)
 )

@@ -3,6 +3,7 @@ package com.futureschole.liveclass.domain.settlement.entity
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 @Table(name = "settlement")
 @Entity
@@ -51,14 +52,36 @@ class Settlement(
     val settledAt: LocalDateTime,
 
     @Column(name = "confirmed_at")
-    val confirmedAt: LocalDateTime?,
+    val confirmedAt: LocalDateTime? = null,
 
     @Column(name = "paid_at")
-    val paidAt: LocalDateTime?,
+    val paidAt: LocalDateTime? = null,
 
     @Column(name = "created_at")
-    val createdAt: LocalDateTime
-)
+    val createdAt: LocalDateTime = LocalDateTime.now()
+) {
+    companion object {
+        fun empty(creatorId: Long, month: YearMonth): Settlement {
+            return Settlement(
+                creatorId = creatorId,
+                settlementMonth = month.atDay(1),
+                status = SettlementStatus.PENDING,
+                totalSaleAmount = 0L,
+                totalCancelAmount = 0L,
+                netSalesAmount = 0L,
+                commissionRate = 20.toShort(),
+                commissionAmount = 0L,
+                settlementAmount = 0L,
+                saleCount = 0L,
+                cancelCount = 0L,
+                settledAt = LocalDateTime.now(),
+                carryoverDeductionAmount = 0L,
+                id = 0
+            )
+        }
+    }
+
+}
 
 enum class SettlementStatus {
     PENDING,

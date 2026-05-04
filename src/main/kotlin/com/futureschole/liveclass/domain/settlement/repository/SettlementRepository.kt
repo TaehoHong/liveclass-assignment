@@ -5,13 +5,16 @@ import com.futureschole.liveclass.domain.settlement.entity.Settlement
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.time.YearMonth
 
 interface SettlementRepository: JpaRepository<Settlement, Long>, QSettlementRepository {
+    fun existsByCreatorIdAndSettlementMonth(creatorId: Long, settlementMonth: LocalDate): Boolean
 }
 
 interface QSettlementRepository {
     fun findAll(creatorId: Long?, settlementMonth: YearMonth?): List<Settlement>
+    fun findAmountByCreatorIdAndSettlementMonth(creatorId: Long, settlementMonth: YearMonth): Long?
 }
 
 @Repository
@@ -33,6 +36,17 @@ class QSettlementRepositoryImpl(
                 settlement.id.desc()
             )
             .fetch()
+    }
+
+    override fun findAmountByCreatorIdAndSettlementMonth(creatorId: Long, settlementMonth: YearMonth): Long? {
+        return queryFactory
+            .select(settlement.settlementAmount)
+            .from(settlement)
+            .where(
+                creatorIdEq(creatorId),
+                settlementMonthEq(settlementMonth)
+            )
+            .fetchOne()
     }
 
     private fun creatorIdEq(creatorId: Long?) =

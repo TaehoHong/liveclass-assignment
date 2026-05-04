@@ -20,5 +20,9 @@ enum class ErrorCode(
     INVALID_CANCEL_AMOUNT(HttpStatus.BAD_REQUEST, "-102", "Cancel amount exceeds sale record amount"),
     INVALID_CANCEL_AT_NOT_AFTER_PAID_AT(HttpStatus.BAD_REQUEST, "-103", "Cancel at must be after paid at"),
     INVALID_CANCEL_AT_IN_FUTURE(HttpStatus.BAD_REQUEST, "-104", "Cancel at must not be in the future"),
-    INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "-105", "Start date must not be after end date")
+    INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "-105", "Start date must not be after end date"),
+
+    DUPLICATE_SETTLEMENT(HttpStatus.BAD_REQUEST, "-200", "Settlement already exists"),
+    INVALID_SETTLEMENT_MONTH_NOT_CLOSED(HttpStatus.BAD_REQUEST, "-201", "Settlement month must be before current month"),
+    INVALID_SETTLEMENT_MONTH_ORDER(HttpStatus.BAD_REQUEST, "-202", "Settlement month must be next month after latest settlement")
 }

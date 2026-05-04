@@ -30,6 +30,7 @@ class SecurityConfig(
                 requests.requestMatchers(HttpMethod.POST, "/api/sale-record").authenticated()
                 requests.requestMatchers(HttpMethod.POST, "/api/cancel-record").authenticated()
                 requests.requestMatchers(HttpMethod.GET, "/api/settlement").hasAnyRole("ADMIN", "CREATOR")
+                requests.requestMatchers(HttpMethod.POST, "/api/settlement").hasRole("ADMIN")
 
                 requests.anyRequest().denyAll()
             }
