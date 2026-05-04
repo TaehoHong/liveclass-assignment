@@ -73,6 +73,10 @@ DB 스키마 파일: [db_schema.sql](src/main/resources/db/db_schema.sql)
 - 취소일은 판매일 이후이며, 현재시간보다 미래일 수 없다.
 - 취소 내역 등록시 동시에 요청이 들어온 경우 방어로직 미구현
 ## AI 활용 범위
+#### 활용 범위
 - 요구사항을 기반으로 설계 방향성 정리.
 - 코드리뷰를 통한 코드 구조 검토 및 예외 케이스 정리.
 - 테스트 케이스 수립 및 테스트 코드 작성
+#### 활용 방법
+- codex + gstack 사용 
+- gstack을 사용하여 harness engineering 기법으로 각 subagent 마다 역할부여
