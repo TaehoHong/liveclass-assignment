@@ -24,5 +24,5 @@ enum class ErrorCode(
 
     DUPLICATE_SETTLEMENT(HttpStatus.BAD_REQUEST, "-200", "Settlement already exists"),
     INVALID_SETTLEMENT_MONTH_NOT_CLOSED(HttpStatus.BAD_REQUEST, "-201", "Settlement month must be before current month"),
-    INVALID_SETTLEMENT_MONTH_ORDER(HttpStatus.BAD_REQUEST, "-202", "Settlement month must be next month after latest settlement")
+    INVALID_SETTLEMENT_SUMMARY_MONTH_IN_FUTURE(HttpStatus.BAD_REQUEST, "-203", "Settlement summary month must not be after current month")
 }

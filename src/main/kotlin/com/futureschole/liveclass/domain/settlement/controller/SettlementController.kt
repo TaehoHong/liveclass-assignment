@@ -2,7 +2,9 @@ package com.futureschole.liveclass.domain.settlement.controller
 
 import com.futureschole.liveclass.domain.settlement.dto.CreationSettlementDto
 import com.futureschole.liveclass.domain.settlement.dto.SettlementMonthlyResponseDto
+import com.futureschole.liveclass.domain.settlement.dto.SettlementSummaryResponseDto
 import com.futureschole.liveclass.domain.settlement.service.SettlementService
+import com.futureschole.liveclass.domain.settlement.service.SettlementSummaryService
 import com.futureschole.liveclass.security.withOwnedCreatorOrAdmin
 import jakarta.validation.Valid
 import org.springframework.format.annotation.DateTimeFormat
@@ -12,7 +14,8 @@ import java.time.YearMonth
 @RequestMapping("/api/settlement")
 @RestController
 class SettlementController(
-    private val settlementService: SettlementService
+    private val settlementService: SettlementService,
+    private val settlementSummaryService: SettlementSummaryService
 ) {
 
     @GetMapping
@@ -23,6 +26,14 @@ class SettlementController(
         return withOwnedCreatorOrAdmin(creatorId) { scopedCreatorId ->
             settlementService.findAll(month, scopedCreatorId)
         }
+    }
+
+    @GetMapping("/summary")
+    fun summary(
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM") startMonth: YearMonth,
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM") endMonth: YearMonth,
+    ): SettlementSummaryResponseDto {
+        return settlementSummaryService.summary(startMonth, endMonth)
     }
 
     @PostMapping

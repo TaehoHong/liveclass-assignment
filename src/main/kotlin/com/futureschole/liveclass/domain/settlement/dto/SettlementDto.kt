@@ -2,6 +2,7 @@ package com.futureschole.liveclass.domain.settlement.dto
 
 import com.futureschole.liveclass.domain.settlement.entity.Settlement
 import com.futureschole.liveclass.domain.settlement.entity.SettlementStatus
+import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDate
 
 data class SettlementMonthlyResponseDto(
@@ -33,3 +34,20 @@ data class SettlementMonthlyResponseDto(
         cancelCount = settlement.cancelCount
     )
 }
+
+data class SettlementSummaryResponseDto(
+    val settlements: List<SettlementSummaryItemDto>,
+    val totalSettlementAmount: Long
+)
+
+data class SettlementSummaryItemDto(
+    val creatorId: Long,
+    val settlements: List<SettlementAmountDto>,
+    val totalSettlementAmount: Long
+)
+
+data class SettlementAmountDto @QueryProjection constructor(
+    val creatorId: Long,
+    val settlementMonth: LocalDate,
+    val settlementAmount: Long
+)
