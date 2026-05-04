@@ -8,21 +8,58 @@ ___
 
 ## 실행 방법
 ___
+먼저 애플리케이션 jar를 생성합니다.
+
+```bash
+./gradlew bootJar
+```
+
+Docker Compose로 MySQL과 애플리케이션을 실행합니다.
+
+```bash
+cd docker
+docker compose up --build
+```
+
+## API 목록 및 예시
+Postman 링크
+https://documenter.getpostman.com/view/18752558/2sBXqKpLVx
+
+링크에 문제가 있는경우 아래 JSON 파일을 Postman Import 하여 실행<br> 
+[Liveclass.postman_collection.json](Liveclass.postman_collection.json)
+
+## 데이터 모델 설명
+DB 스키마 파일: [db_schema.sql](src/main/resources/db/db_schema.sql)
+
+## 테스트 실행 방법
+전체 테스트는 다음 명령으로 실행합니다.
+
+```bash
+./gradlew test
+```
+
+통합 테스트는 Testcontainers MySQL을 사용하므로 Docker가 실행 중이어야 합니다.
+
 ## 요구사항 해석 및 가정
 ___
 ### 참고사항
-- 별도 인증체계는 구현하지 않고 `userId: 1 = ADMIN`, `userId: 2 = 크리에이터`로 본다.
+- 별도 인증체계는 구현하지 않고 `userId: 1 = ADMIN`, `userId: 2 = CREATOR`로 본다.
     - Header에 `key: userId` `value: 1`를 추가하여 요청한다.  
 - User 2번에 creatorId = 1을 매핑하여 인증시 사용한다.
+- 샘플 데이터의 문자열 ID는 숫자 ID로 변환되어 저장된다.
+  - 예: `creator-1` → `1`, `course-1` → `1`, `sale-1` → `1`
 
 ### 가정
 #### 공통
 - 환불액이 판매액보다 큰 기간은 **음수 정산 금액을 허용**하며, 정산액이 음수일 경우 다음달 정산금에서 공제한다.
 - 요구사항 샘플에 없는 `cancel-1`, `cancel-2`, `cancel-3`은 검증 시나리오 기준으로 별도 생성한다고 가정한다.
- 
+- 정산은 스케쥴러를 통해 매월 1일 00:00에 실행이 되는 것으로 가정한다.
 
-#### [3-1] 운영자용 정산 내역 집계 API
+#### 크리에이터별 월별 정산 조회, 운영자용 정산 내역 집계 API
 - **조회 API** 이며, **정산 진행/확정/지급 용 API**는 별도로 존재한다.
+- 운영자용 정산 집계는 기간 내 크리에이터별 정산 예정 금액과 전체 합계를 반환한다.
+- 현재월이 조회 범위에 포함되면 저장된 정산 데이터가 없더라도 예상 정산액을 계산해 응답한다.
+- 과거월은 정산 생성 API를 통해 저장된 정산 데이터를 기준으로 조회한다.
 
 
 ## 설계 결정과 이유
@@ -43,3 +80,6 @@ ___
 ___
 ## AI 활용 범위
 ___
+- 요구사항을 기반으로 설계 방향성 정리.
+- 코드리뷰를 통한 코드 구조 검토 및 예외 케이스 정리.
+- 테스트 케이스 수립 및 테스트 코드 작성
